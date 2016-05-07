@@ -54,13 +54,17 @@ public class Model {
 				double peso = dk.getPathLength();
 				//result = result + stazione.getNome() + " = " + peso + "\n";
 				
-				risultati = Graphs.getPathVertexList(dk.getPath()); 
+				risultati = Graphs.getPathVertexList(dk.getPath());
+				int nFermate=risultati.size();
 				for(Fermata f: risultati){
 				result= result+ " Stazione:   "+f.getNome()+ "\n";
+				
 			
 			
+				
 			
-		}result = result+String.format("distanza totale : %.2f Km" , peso)+"\n";
+		}result = result+String.format("tempo di percorrenza totale (minuti): %.2f " , peso+nFermate*0.5)+"\n";
+		
 		
 		
 		
