@@ -1,7 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
-	
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.metrodeparis.MetroDeParisController">
-	<!-- TODO Add Nodes -->
+
+
+<BorderPane prefHeight="437.0" prefWidth="433.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="it.polito.tdp.metrodeparis.MetroDeParisController">
+   <top>
+      <Label text="Lab8_MetroParis" BorderPane.alignment="CENTER" />
+   </top>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="46.0" prefWidth="348.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="242.0" text="Seleziona una stazione di Partenza" />
+               </children>
+            </HBox>
+            <HBox prefHeight="39.0" prefWidth="348.0" spacing="30.0">
+               <children>
+                  <ImageView fitHeight="55.0" fitWidth="65.0">
+                     <image>
+                        <Image url="@../../../../../rsc/RATP.png" />
+                     </image>
+                  </ImageView>
+                  <ComboBox fx:id="comboPartenza" prefHeight="25.0" prefWidth="174.0" />
+                  <Button fx:id="btnDistanza" mnemonicParsing="false" onAction="#doDistanza" text="Calcola Distanza" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="348.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="250.0" text="Seleziona una stazione di  Arrivo" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="43.0" prefWidth="348.0">
+               <children>
+                  <ComboBox fx:id="comboArrivo" prefHeight="25.0" prefWidth="190.0">
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </ComboBox>
+                  <Button fx:id="btnPercorso" mnemonicParsing="false" onAction="#doPercorso" prefHeight="25.0" prefWidth="111.0" text="Calcola Percorso">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+            <TextArea fx:id="txtResult" editable="false" prefHeight="239.0" prefWidth="433.0" promptText="Output" />
+         </children>
+      </VBox>
+   </center>
 </BorderPane>
