@@ -1,12 +1,20 @@
 package it.polito.tdp.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.javadocmd.simplelatlng.LatLng;
+
+import it.polito.tdp.model.FermataSuLinea;
+
+
 
 public class Fermata {
 	
 	private int idFermata;
 	private String nome;
 	private LatLng coords;
+	private List<FermataSuLinea> fermateSuLinea;
 	
 	
 	public Fermata(int idFermata, String nome, LatLng coords) {
@@ -14,6 +22,10 @@ public class Fermata {
 		this.idFermata = idFermata;
 		this.nome = nome;
 		this.coords = coords;
+		this.fermateSuLinea = new ArrayList<FermataSuLinea>();
+	}
+	public Fermata(int idFermata) {
+		this.idFermata = idFermata;
 	}
 	
 	
@@ -34,7 +46,16 @@ public class Fermata {
 	}
 	public void setCoords(LatLng coords) {
 		this.coords = coords;
+		
+		}
+	public List<FermataSuLinea> getFermateSuLinea() {
+		return this.fermateSuLinea;
 	}
+
+	public void addFermataSuLinea(FermataSuLinea fermataSuLinea) {
+		this.fermateSuLinea.add(fermataSuLinea);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

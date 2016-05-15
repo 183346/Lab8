@@ -28,7 +28,7 @@
                      </image>
                   </ImageView>
                   <ComboBox fx:id="comboPartenza" prefHeight="25.0" prefWidth="174.0" />
-                  <Button fx:id="btnDistanza" mnemonicParsing="false" onAction="#doDistanza" text="Calcola Distanza" />
+                  <Button fx:id="btnDistanza" mnemonicParsing="false" onAction="#doDistanza" text="Calcola Tempo" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="34.0" prefWidth="348.0">

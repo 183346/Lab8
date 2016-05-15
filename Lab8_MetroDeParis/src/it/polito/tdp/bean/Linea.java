@@ -1,5 +1,7 @@
 package it.polito.tdp.bean;
 
+
+
 public class Linea {
 	
 	private int idLinea;
@@ -10,6 +12,12 @@ public class Linea {
 	public int getIdLinea() {
 		return idLinea;
 	}
+	
+	public Linea(int idLinea) {
+		this.idLinea = idLinea;
+	}
+	
+	
 	public void setIdLinea(int idLinea) {
 		this.idLinea = idLinea;
 	}
@@ -44,6 +52,7 @@ public class Linea {
 		result = prime * result + idLinea;
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -65,5 +74,8 @@ public class Linea {
 		this.velocita = velocita;
 		this.intervallo = intervallo;}
 	
+	public String toString() {
+		return nome;
+	}
 
 }

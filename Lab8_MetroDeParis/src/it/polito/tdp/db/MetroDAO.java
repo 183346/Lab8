@@ -1,3 +1,4 @@
+
 package it.polito.tdp.db;
 
 import java.sql.Connection;
@@ -13,6 +14,8 @@ import com.javadocmd.simplelatlng.LatLng;
 import it.polito.tdp.bean.Connessione;
 import it.polito.tdp.bean.Fermata;
 import it.polito.tdp.bean.Linea;
+import it.polito.tdp.model.FermataSuLinea;
+
 
 
 
@@ -127,6 +130,41 @@ public List<Linea> getAllLinea() {
 	}
 	
 	return l ;
+}
+public List<FermataSuLinea> getAllFermateSuLinea(List<Fermata> fermate, List<Linea> linee) {
+
+	final String sql = "SELECT DISTINCT fermata.id_fermata, linea.id_linea FROM fermata, linea, connessione WHERE (fermata.id_fermata = connessione.id_stazP OR fermata.id_fermata = connessione.id_stazA) AND connessione.id_linea = linea.id_linea";
+	List<FermataSuLinea> fermateSuLinea = new ArrayList<FermataSuLinea>();
+
+	try {
+		Connection conn = DBConnect.getInstance().getConnection();
+		PreparedStatement st = conn.prepareStatement(sql);
+		ResultSet rs = st.executeQuery();
+
+		while (rs.next()) {
+
+			int idLinea = rs.getInt("id_linea");
+			int idFermata = rs.getInt("id_fermata");
+
+			// Creo un nuovo oggetto, per trovarne uno esistente
+			Linea linea = linee.get(linee.indexOf(new Linea(idLinea)));
+			Fermata fermata = fermate.get(fermate.indexOf(new Fermata(idFermata)));
+
+			FermataSuLinea fermataSuLinea = new FermataSuLinea(fermata, linea);
+			fermata.addFermataSuLinea(fermataSuLinea);
+			fermateSuLinea.add(fermataSuLinea);
+			//System.out.println("sto caricando "+fermateSuLinea.indexOf(fermataSuLinea)+"  " +fermataSuLinea.getNome());
+		}
+
+		st.close();
+		conn.close();
+
+	} catch (SQLException e) {
+		e.printStackTrace();
+		throw new RuntimeException("Errore di connessione al Database.");
+	}
+
+	return fermateSuLinea;
 }
 
 }
