@@ -30,8 +30,9 @@ public class MetroDAO {
 		
 		List<Fermata> l = new ArrayList<Fermata>() ;
 		
+		Connection conn = DBConnect.getConnection() ;
 		try {
-			Connection conn = DBConnect.getInstance().getConnection();
+			
 			
 			PreparedStatement st = conn.prepareStatement(sql) ;
 			
@@ -61,9 +62,10 @@ public List<Connessione> getAllConnessione(List <Linea> linee, List <Fermata> fe
 		final String sql = "select id_connessione, id_linea, id_stazP, id_stazA from connessione" ;
 		
 		List<Connessione> l = new ArrayList<Connessione>() ;
+		Connection conn = DBConnect.getConnection() ;
 
 		try {
-			Connection conn = DBConnect.getInstance().getConnection();
+			
 			
 			PreparedStatement st = conn.prepareStatement(sql) ;
 			
@@ -104,9 +106,9 @@ public List<Linea> getAllLinea() {
 	final String sql = "SELECT id_linea, nome, velocita, intervallo FROM linea ORDER BY nome ASC" ;
 	
 	List<Linea> l = new ArrayList<Linea>() ;
-	
+	Connection conn = DBConnect.getConnection() ;
 	try {
-		Connection conn = DBConnect.getInstance().getConnection();
+		
 		
 		PreparedStatement st = conn.prepareStatement(sql) ;
 		
@@ -135,9 +137,10 @@ public List<FermataSuLinea> getAllFermateSuLinea(List<Fermata> fermate, List<Lin
 
 	final String sql = "SELECT DISTINCT fermata.id_fermata, linea.id_linea FROM fermata, linea, connessione WHERE (fermata.id_fermata = connessione.id_stazP OR fermata.id_fermata = connessione.id_stazA) AND connessione.id_linea = linea.id_linea";
 	List<FermataSuLinea> fermateSuLinea = new ArrayList<FermataSuLinea>();
+	Connection conn = DBConnect.getConnection() ;
 
 	try {
-		Connection conn = DBConnect.getInstance().getConnection();
+		
 		PreparedStatement st = conn.prepareStatement(sql);
 		ResultSet rs = st.executeQuery();
 

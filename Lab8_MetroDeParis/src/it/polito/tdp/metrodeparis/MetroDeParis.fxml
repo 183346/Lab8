@@ -7,8 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-
-<BorderPane prefHeight="437.0" prefWidth="433.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="it.polito.tdp.metrodeparis.MetroDeParisController">
+<BorderPane prefHeight="437.0" prefWidth="433.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.metrodeparis.MetroDeParisController">
    <top>
       <Label text="Lab8_MetroParis" BorderPane.alignment="CENTER" />
    </top>
@@ -34,6 +33,7 @@
             <HBox alignment="CENTER" prefHeight="34.0" prefWidth="348.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="250.0" text="Seleziona una stazione di  Arrivo" />
+                  <Button fx:id="btnCiclo" mnemonicParsing="false" onAction="#doCiclo" prefHeight="25.0" prefWidth="94.0" text="calcola Ciclo" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="43.0" prefWidth="348.0">

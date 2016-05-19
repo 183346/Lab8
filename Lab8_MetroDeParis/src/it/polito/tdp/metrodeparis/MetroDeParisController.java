@@ -45,6 +45,21 @@ public class MetroDeParisController {
 
     @FXML // fx:id="btnPercorso"
     private Button btnPercorso; // Value injected by FXMLLoader
+    
+    @FXML // fx:id="btnCiclo"
+    private Button btnCiclo; // Value injected by FXMLLoader
+
+    
+   
+    
+    @FXML
+    void doCiclo(ActionEvent event) {
+    	this.txtResult.clear();
+    	String result = model.doCiclo();
+    	if(result.equals("")){this.txtResult.appendText("Nessun risultato");}
+    	this.txtResult.appendText(result);
+
+    }
 
     @FXML
     void doDistanza(ActionEvent event) {
@@ -110,6 +125,7 @@ public class MetroDeParisController {
         assert comboArrivo != null : "fx:id=\"comboArrivo\" was not injected: check your FXML file 'MetroDeParis.fxml'.";
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'MetroDeParis.fxml'.";
         assert btnPercorso != null : "fx:id=\"btnPercorso\" was not injected: check your FXML file 'MetroDeParis.fxml'.";
+        assert btnCiclo != null : "fx:id=\"btnCiclo\" was not injected: check your FXML file 'MetroDeParis.fxml'.";
 
     }
 }

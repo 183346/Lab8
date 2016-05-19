@@ -2,9 +2,16 @@ package it.polito.tdp.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.alg.cycle.DirectedSimpleCycles;
+import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
+import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -35,6 +42,8 @@ public class Model {
 	
 	// Directed Weighted Graph
 		private DefaultDirectedWeightedGraph<FermataSuLinea, DefaultWeightedEdge> grafo2 = null;
+		private DirectedGraph<FermataSuLinea, DefaultWeightedEdge> grafo3 = null;
+		
 
 		public List<Fermata> getStazioni() {
 
@@ -112,6 +121,7 @@ public class Model {
 		//
 		for(Connessione c:connessioni){
         DefaultWeightedEdge arco = grafo.addEdge(c.getStazP(), c.getStazA());
+        
 			
 			if (arco!=null) {
 				double velocita = c.getLinea().getVelocita();
@@ -247,6 +257,32 @@ public class Model {
 		risultato.append("]");
 
 		return risultato.toString();
+	}
+
+	public String doCiclo() {
+		String result="";
+		this.creaGrafo2();
+		DirectedSimpleCycles<FermataSuLinea, DefaultWeightedEdge> contaCircuiti= new SzwarcfiterLauerSimpleCycles<FermataSuLinea, DefaultWeightedEdge>(grafo2);
+		List<FermataSuLinea> listatemporanea = new LinkedList<FermataSuLinea>();
+		/*List<List<FermataSuLinea>> circuiti=contaCircuiti.findSimpleCycles();
+		/*int massimo=0;
+		for(List<FermataSuLinea> circu:circuiti){
+			if(massimo<circu.size()){listatemporanea=circu;massimo=circu.size();}
+		}
+		for(FermataSuLinea lt:listatemporanea){
+			result=result+"stazione :  "+ lt.getNome()+"  in linea :  " + lt.getLinea().getNome()+"\n";
+		}*/
+		//risultati = Graphs.getPathVertexList(dk.getPath());
+		grafo3=contaCircuiti.getGraph();
+		Set<DefaultWeightedEdge> pathEdgeList1 = null;
+		pathEdgeList1=grafo3.edgeSet();
+		
+		for(DefaultWeightedEdge ddd:pathEdgeList1){
+			
+			result=result+"stazione :  " + grafo3.getEdgeSource(ddd).getNome()+"  "+grafo3.getEdgeSource(ddd).getLinea().getNome()+"\n";
+		}
+		
+		return result;
 	}
 
 }

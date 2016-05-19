@@ -3,36 +3,34 @@ package it.polito.tdp.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-/* DBConnect realizzata come "singleton" */
+
 
 public class DBConnect {
 
-	static private final String jdbcUrl = "jdbc:mysql://localhost/metroparis?user=root&password=";
-	static private DBConnect instance = null ;
-	
-	private DBConnect () {
-		instance = this ;
-		//System.out.println("instance created") ;
-	}
-	
-	public static DBConnect getInstance() {
-		if(instance == null)
-			return new DBConnect() ;
-		else {
-			//System.out.println("instance reused") ;
-			return instance ;
-		}
-	}
-	
-	public Connection getConnection() {
-		try {
-			Connection conn = DriverManager.getConnection(jdbcUrl) ;
-			return conn ;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException("Cannot get connection "+jdbcUrl, e) ;
-		}	
-	}
+	private static final String jdbcURL = "jdbc:mysql://localhost/metroparis?user=root" ;
+ 	
+		private static ComboPooledDataSource dataSource = null ;
+		
+	 	public static Connection getConnection() {
+			
+	 		Connection conn;
+	 		try {
+				
+				
+			if(dataSource==null) {
+					// creare ed attivare il Connection Pool
+					dataSource = new ComboPooledDataSource() ;
+				dataSource.setJdbcUrl(jdbcURL);
+			}
+				
+			return dataSource.getConnection();
+			
+	 		} 
+	 		catch (SQLException e) {
+	 			e.printStackTrace();
+	 			throw new RuntimeException("Errore nella connessione", e) ;
+}
+	 		}
 }
