@@ -38,12 +38,25 @@ public class Model {
 	SimpleWeightedGraph<Fermata,DefaultWeightedEdge> grafo = new SimpleWeightedGraph<Fermata,DefaultWeightedEdge>(DefaultWeightedEdge.class);
 	private List<DefaultWeightedEdge> pathEdgeList = null;
 	private double pathTempoTotale = 0;
+	// Due linee "virtuali" per l'inizio e la fine della corsa
+		private Linea virtInizioCorsa = new Linea(-100, "*INIZIO*", 0, 0);
+		private Linea virtFineCorsa = new Linea(-101, "*FINE*", 0, 0);
+		private static boolean debug = true;
+
+
 	
 	
 	// Directed Weighted Graph
 		private DefaultDirectedWeightedGraph<FermataSuLinea, DefaultWeightedEdge> grafo2 = null;
 		private DirectedGraph<FermataSuLinea, DefaultWeightedEdge> grafo3 = null;
+		private DirectedGraph<FermataSuLinea, DefaultWeightedEdge> grafo4 = null;
 		
+		public Model() {
+			if (debug)
+				System.out.println("Costruisco il grafo.");
+
+			MetroDAO dao = new MetroDAO();
+		}
 
 		public List<Fermata> getStazioni() {
 
@@ -62,6 +75,11 @@ public class Model {
 			linee = metroDAO.getAllLinea();
 			connessioni = metroDAO.getAllConnessione(linee, fermate);
 			fermateSuLinea = metroDAO.getAllFermateSuLinea(fermate, linee);
+			// PATCH: Aggiungo le "meta fermate"
+			for (Fermata fermata : fermate) {
+				fermateSuLinea.add(new FermataSuLinea(fermata, virtInizioCorsa));
+				fermateSuLinea.add(new FermataSuLinea(fermata, virtFineCorsa));
+			}
 
 			// Directed Weighted
 			grafo2 = new DefaultDirectedWeightedGraph<FermataSuLinea, DefaultWeightedEdge>(DefaultWeightedEdge.class);
@@ -94,6 +112,7 @@ public class Model {
 			// FASE3: Aggiungo tutte le connessioni tra tutte le fermateSuLinee
 			// della stessa Fermata
 			for (Fermata fermata : fermate) {
+				
 				for (FermataSuLinea fslP : fermata.getFermateSuLinea()) {
 					for (FermataSuLinea fslA : fermata.getFermateSuLinea()) {
 						if (!fslP.equals(fslA)) {
@@ -109,6 +128,9 @@ public class Model {
 		
 		
 	public String calcolaDistanza(Fermata partenza, Fermata arrivo) {
+		
+		
+		
 		String result="";
 		//Creazione del Grafo
 		// prima cosa caricare tutti i vertici , cioè tutte le fermate-stazioni
@@ -165,6 +187,7 @@ public class Model {
 	}
 
 	public void calcolaPercorso(Fermata partenza, Fermata arrivo) {
+		
 		this.creaGrafo2();
 		MetroDAO dao = new MetroDAO();
 		fermate=dao.getAllFermata();
@@ -283,6 +306,113 @@ public class Model {
 		}
 		
 		return result;
+	}
+
+	public void calcolaPercorso1(Fermata partenza, Fermata arrivo) {
+		this.creaGrafo4();
+		FermataSuLinea fslP = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(partenza, virtInizioCorsa)));
+		FermataSuLinea fslA = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(arrivo, virtFineCorsa)));
+
+		System.out.println("Calcolo percorso da: " + fslP + " a " + fslA);
+
+		DijkstraShortestPath<FermataSuLinea, DefaultWeightedEdge> dijkstra = new DijkstraShortestPath<FermataSuLinea, DefaultWeightedEdge>(grafo4, fslP, fslA);
+
+		pathEdgeList = dijkstra.getPathEdgeList();
+		pathTempoTotale = dijkstra.getPathLength();
+
+		if (pathEdgeList == null)
+			throw new RuntimeException("Non è stato creato un percorso.");
+	}
+
+	private void creaGrafo4() {
+		MetroDAO metroDAO = new MetroDAO();
+		fermate = metroDAO.getAllFermata();
+		linee = metroDAO.getAllLinea();
+		connessioni = metroDAO.getAllConnessione(linee, fermate);
+		fermateSuLinea = metroDAO.getAllFermateSuLinea(fermate, linee);
+
+		// PATCH: Aggiungo le "meta fermate"
+		for (Fermata fermata : fermate) {
+			fermateSuLinea.add(new FermataSuLinea(fermata, virtInizioCorsa));
+			fermateSuLinea.add(new FermataSuLinea(fermata, virtFineCorsa));
+		}
+
+		// Directed Weighted
+		grafo4 = new DefaultDirectedWeightedGraph<FermataSuLinea, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+
+		// FASE1: Aggiungo un vertice per ogni fermata
+		Graphs.addAllVertices(grafo4, fermateSuLinea);
+
+		// FASE2: Aggiungo tutte le connessioni tra tutte le fermate
+		for (Connessione c : connessioni) {
+
+			double velocita = c.getLinea().getVelocita();
+			double distanza = LatLngTool.distance(c.getStazP().getCoords(), c.getStazA().getCoords(),LengthUnit.KILOMETER);
+			double tempo = (distanza / velocita) * 60 * 60;
+
+			// Cerco la fermataSuLinea corretta all'interno della lista delle
+			// fermate
+			FermataSuLinea fslPartenza = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(c.getStazP(), c.getLinea())));
+			FermataSuLinea fslArrivo = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(c.getStazA(), c.getLinea())));
+
+			if (fslPartenza != null && fslArrivo != null) {
+				// Aggiungoun un arco pesato tra le due fermate
+				Graphs.addEdge(grafo4, fslPartenza, fslArrivo, tempo);
+			} else {
+				System.err.println("Non ho trovato fslPartenza o fslArrivo. Salto alle prossime");
+			}
+		}
+
+		// FASE3: Aggiungo tutte le connessioni tra tutte le fermateSuLinee della stessa Fermata
+		for (Fermata fermata : fermate) {
+			
+			FermataSuLinea metaFermataP = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(fermata, virtInizioCorsa)));
+			FermataSuLinea metaFermataA = fermateSuLinea.get(fermateSuLinea.indexOf(new FermataSuLinea(fermata, virtFineCorsa)));
+			
+			for (FermataSuLinea ft : fermata.getFermateSuLinea()) {
+				if (debug) System.err.println("Pseudo arco da " + metaFermataP + " a " + ft);
+				Graphs.addEdge(grafo4, metaFermataP, ft, 0);
+				if (debug) System.err.println("Pseudo arco da " + ft + " a " + metaFermataA);
+				Graphs.addEdge(grafo4, ft, metaFermataA, 0);
+			}
+
+			for (FermataSuLinea fslP : fermata.getFermateSuLinea()) {
+				for (FermataSuLinea fslA : fermata.getFermateSuLinea()) {
+					if (!fslP.equals(fslA)) {
+						Graphs.addEdge(grafo4, fslP, fslA, fslA.getLinea().getIntervallo() * 60 / 2);
+					}
+				}
+			}
+		}
+
+		if (debug)
+			System.out.println("Grafo creato: " + grafo.vertexSet().size() + " nodi, " + grafo.edgeSet().size() + " archi");
+		
+	}
+
+	public String getPercorsoEdgeList1() {
+
+		if (pathEdgeList == null)
+			throw new RuntimeException("Non è stato creato un percorso.");
+
+		StringBuilder risultato = new StringBuilder();
+		risultato.append("Percorso:");
+
+		Linea ultimaLinea = null;
+		for (DefaultWeightedEdge edge : pathEdgeList) {
+			if (!grafo4.getEdgeTarget(edge).getLinea().equals(virtFineCorsa)) {
+				if (!grafo4.getEdgeTarget(edge).getLinea().equals(ultimaLinea)) {
+					ultimaLinea = grafo4.getEdgeTarget(edge).getLinea();
+					risultato.append("\n\nPrendere Linea: " + ultimaLinea.getNome() + "\n");
+				} else {
+					risultato.append(", ");
+				}
+				risultato.append(grafo4.getEdgeTarget(edge).getNome());
+			}
+		}
+
+		return risultato.toString();
+		
 	}
 
 }
